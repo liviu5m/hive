@@ -50,4 +50,7 @@ public class CommentService {
     }
 
 
+    public Long findCommentsAndRepliesByPostId(Long postId) {
+        return commentRepository.countCommentsAndRepliesByPostId(postId);
+    }
 }

@@ -33,3 +33,31 @@ export async function getRepliesByCommentId(commentId: number, token: string) {
   });
   return response.data;
 }
+
+export async function deleteReplyApi(replyId: number, token: string) {
+  const response = await axios.delete(`${baseUrl}/api/reply/${replyId}`, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+}
+
+export async function updateReplyApi(
+  replyId: number,
+  content: string,
+  token: string
+) {
+  const response = await axios.put(
+    `${baseUrl}/api/reply/${replyId}`,
+    {
+      content,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
+  return response.data;
+}

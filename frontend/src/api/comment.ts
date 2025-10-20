@@ -61,3 +61,14 @@ export async function getCommentsByPostId(postId: number, token: string) {
   });
   return response.data;
 }
+
+
+export async function getCommentsAndRepliesByPostId(postId: number, token: string) {
+  const response = await axios.get(`${baseUrl}/api/comment/reply`, {
+    params: { postId },
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+}

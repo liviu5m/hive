@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CommentCard } from "./Comment.tsx";
+import { CommentCard } from "./CommentCard.tsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addCommentApi, getCommentsByPostId } from "@/api/comment.ts";
 import { useAppContext } from "@/lib/AppContext.tsx";
@@ -62,7 +62,6 @@ export function CommentSection({ comments, postId }: CommentSectionProps) {
           </button>
         </div>
       </form>
-      {/* Comment Controls */}
       {comments.length > 0 && (
         <div className="px-4 py-2 flex justify-between items-center border-b border-gray-100">
           <span className="text-sm text-gray-500">

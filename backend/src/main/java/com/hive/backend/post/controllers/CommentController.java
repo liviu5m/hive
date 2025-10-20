@@ -23,6 +23,11 @@ public class CommentController {
         return commentService.findByPostId(postId);
     }
 
+    @GetMapping("/reply")
+    public Long findCommentsAndRepliesByPostId(@RequestParam Long postId) {
+        return commentService.findCommentsAndRepliesByPostId(postId);
+    }
+
     @PostMapping
     public Comment saveComment(@RequestBody CommentDto commentDto) {
         return commentService.saveComment(commentDto);

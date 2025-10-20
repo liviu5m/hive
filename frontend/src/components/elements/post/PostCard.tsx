@@ -8,7 +8,10 @@ import { addLikeApi, getLikesByPostId, removeLikeApi } from "@/api/like";
 import { useAppContext } from "@/lib/AppContext";
 import { CommentSection } from "./CommentingSection";
 import Loader from "../Loader";
-import { getCommentsByPostId } from "@/api/comment";
+import {
+  getCommentsAndRepliesByPostId,
+  getCommentsByPostId,
+} from "@/api/comment";
 
 const PostCard = ({ post }: { post: Post }) => {
   const { user, token } = useAppContext();
@@ -49,7 +52,13 @@ const PostCard = ({ post }: { post: Post }) => {
     },
   });
 
-  return isPendingLikes || isPendingComment ? (
+  const { data: commentsAndReplies, isPending: isCommentsCounterLoading } =
+    useQuery({
+      queryKey: ["comment-replies", post.id],
+      queryFn: () => getCommentsAndRepliesByPostId(post.id, token || ""),
+    });
+
+  return isPendingLikes || isPendingComment || isCommentsCounterLoading ? (
     <Loader />
   ) : (
     <div className="shadow p-5 rounded-lg bg-white">
@@ -71,26 +80,34 @@ const PostCard = ({ post }: { post: Post }) => {
       </div>
       <div className="mt-3">
         <p>{post.content}</p>
-        <div className="grid grid-cols-2 gap-10 mt-5 border-b border-gray-200 pb-8">
-          <div>
-            <img
-              src={images[0]}
-              className="aspect-square rounded-lg object-cover"
-            />
-          </div>
-          <div className="relative">
-            <img
-              src={images[1]}
-              className="aspect-square rounded-lg object-cover"
-            />
-            <div
-              className="absolute w-full h-full rounded-lg top-0 left-0 flex items-center justify-center text-white text-3xl bg-black/30 cursor-pointer"
-              onClick={() => setIsCarouselOpened(true)}
-            >
-              <h1>+2</h1>
+        {images.length > 0 && (
+          <div
+            className={`grid ${
+              images.length >= 2 && "grid-cols-2"
+            } gap-10 mt-5 border-b border-gray-200 pb-8`}
+          >
+            <div>
+              <img
+                src={images[0]}
+                className={`${
+                  images.length == 0 && "w-full"
+                } aspect-square rounded-lg object-cover`}
+              />
+            </div>
+            <div className="relative">
+              <img
+                src={images[1]}
+                className="aspect-square rounded-lg object-cover"
+              />
+              <div
+                className="absolute w-full h-full rounded-lg top-0 left-0 flex items-center justify-center text-white text-3xl bg-black/30 cursor-pointer"
+                onClick={() => setIsCarouselOpened(true)}
+              >
+                <h1>+2</h1>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="flex items-center justify-start mt-5 gap-5 text-gray-600">
           <div className="flex items-center justify-center gap-2">
             <Heart
@@ -117,10 +134,12 @@ const PostCard = ({ post }: { post: Post }) => {
               className={`cursor-pointer ${isCommenting && "text-blue-400"}`}
               onClick={() => setIsCommenting(!isCommenting)}
             />
-            <h2 className="font-semibold">{comments.length}</h2>
+            <h2 className="font-semibold">{commentsAndReplies}</h2>
           </div>
         </div>
-        {isCommenting && <CommentSection comments={comments} postId={post.id} />}
+        {isCommenting && (
+          <CommentSection comments={comments} postId={post.id} />
+        )}
       </div>
       {isCarouselOpened && (
         <ImageCarouselModal
