@@ -52,9 +52,14 @@ export async function updateCommentApi(
   return response.data;
 }
 
-export async function getCommentsByPostId(postId: number, token: string) {
+export async function getCommentsByPostId(
+  postId: number,
+  commentPage: number,
+  commentPageSize: number,
+  token: string
+) {
   const response = await axios.get(`${baseUrl}/api/comment`, {
-    params: { postId },
+    params: { postId, page: commentPage, size: commentPageSize },
     headers: {
       Authorization: "Bearer " + token,
     },
@@ -62,8 +67,10 @@ export async function getCommentsByPostId(postId: number, token: string) {
   return response.data;
 }
 
-
-export async function getCommentsAndRepliesByPostId(postId: number, token: string) {
+export async function getCommentsAndRepliesByPostId(
+  postId: number,
+  token: string
+) {
   const response = await axios.get(`${baseUrl}/api/comment/reply`, {
     params: { postId },
     headers: {

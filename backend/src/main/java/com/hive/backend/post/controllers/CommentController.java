@@ -4,6 +4,7 @@ import com.hive.backend.post.dtos.CommentDto;
 import com.hive.backend.post.dtos.CommentUpdateDto;
 import com.hive.backend.post.models.Comment;
 import com.hive.backend.post.services.CommentService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +20,10 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<Comment> findByPostId(@RequestParam Long postId) {
-        return commentService.findByPostId(postId);
+    public Page<Comment> findByPostId(@RequestParam Long postId,
+                                      @RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        return commentService.findByPostId(postId, page, size);
     }
 
     @GetMapping("/reply")

@@ -20,7 +20,7 @@ const Home = () => {
     <BodyLayout>
       <div className="w-[1000px] mt-5">
         <h1 className="text-3xl font-bold">Feed</h1>
-        <div className="flex flex-col gap-7 mt-10">
+        <div className="flex flex-col gap-7 my-10">
           {posts.map((post: Post, i: number) => {
             return <PostCard key={i} post={post} />;
           })}

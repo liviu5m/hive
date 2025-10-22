@@ -8,6 +8,10 @@ import com.hive.backend.post.repositories.CommentRepository;
 import com.hive.backend.post.repositories.PostRepository;
 import com.hive.backend.user.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +29,9 @@ public class CommentService {
         this.postRepository = postRepository;
     }
 
-    public List<Comment> findByPostId(Long postId) {
-        return commentRepository.findByPostId(postId);
+    public Page<Comment> findByPostId(Long postId, int page, int size) {
+        Pageable pageable =  PageRequest.of(0, (page + 1) * size);
+        return commentRepository.findByPostId(postId, pageable);
     }
 
     public Comment saveComment(CommentDto commentDto) {

@@ -3,7 +3,12 @@ import { getTimeAgo } from "@/lib/utils";
 import { useState } from "react";
 import ImageCarouselModal from "./ImageCarouselModal";
 import { Heart, MessageCircle } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { addLikeApi, getLikesByPostId, removeLikeApi } from "@/api/like";
 import { useAppContext } from "@/lib/AppContext";
 import { CommentSection } from "./CommentingSection";
@@ -19,6 +24,8 @@ const PostCard = ({ post }: { post: Post }) => {
   const images = JSON.parse(post.images);
   const [isCarouselOpened, setIsCarouselOpened] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+  const [commentPage, setCommentPage] = useState(0);
+  const commentPageSize = 10;
 
   const { data: likes, isPending: isPendingLikes } = useQuery({
     queryKey: ["post-likes", post.id],
@@ -26,8 +33,10 @@ const PostCard = ({ post }: { post: Post }) => {
   });
 
   const { data: comments, isPending: isPendingComment } = useQuery({
-    queryKey: ["post-comments", post.id],
-    queryFn: () => getCommentsByPostId(post.id, token || ""),
+    queryKey: ["post-comments", post.id, commentPage],
+    queryFn: () =>
+      getCommentsByPostId(post.id, commentPage, commentPageSize, token || ""),
+    placeholderData: keepPreviousData,
   });
 
   const { mutate: addLike, isPending: isAddingLike } = useMutation({
@@ -57,6 +66,8 @@ const PostCard = ({ post }: { post: Post }) => {
       queryKey: ["comment-replies", post.id],
       queryFn: () => getCommentsAndRepliesByPostId(post.id, token || ""),
     });
+
+  console.log(comments, commentPageSize);
 
   return isPendingLikes || isPendingComment || isCommentsCounterLoading ? (
     <Loader />
@@ -138,7 +149,14 @@ const PostCard = ({ post }: { post: Post }) => {
           </div>
         </div>
         {isCommenting && (
-          <CommentSection comments={comments} postId={post.id} />
+          <CommentSection
+            comments={comments.content}
+            postId={post.id}
+            commentPage={commentPage}
+            setCommentPage={setCommentPage}
+            totalPages={comments.totalElements / commentPageSize}
+            totalElements={comments.totalElements}
+          />
         )}
       </div>
       {isCarouselOpened && (
