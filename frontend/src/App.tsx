@@ -12,8 +12,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import GoogleAuth from "./components/pages/Google";
 import Profile from "./components/pages/Profile";
-import Connections from "./components/pages/Connections";
 import Discover from "./components/pages/Discover";
+import Messages from "./components/pages/Messages";
+import Post from "./components/pages/Post";
 
 function App() {
   const queryClient = new QueryClient();
@@ -30,8 +31,9 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/profile/:id" element={<Profile />} />
-                      <Route path="/connections" element={<Connections />} />
                       <Route path="/discover" element={<Discover />} />
+                      <Route path="/messages" element={<Messages />} />
+                      <Route path="/post/:id" element={<Post />} />
                     </Routes>
                   </AuthRequiredRoute>
                 }

@@ -1,7 +1,7 @@
 import { createPostApi } from "@/api/post";
 import { uploadImageOnCloudinary } from "@/api/upload";
 import { useAppContext } from "@/lib/AppContext";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -19,6 +19,7 @@ const CreatePostModal = ({
   const [content, setContent] = useState("");
   const [images, setImages] = useState<Picture[]>([]);
   const [imageResult, setImageResult] = useState<string[]>([]);
+  const queryClient = useQueryClient();
 
   const { mutate: createPost, isPending: isPostCreating } = useMutation({
     mutationKey: ["create-post"],
@@ -32,7 +33,7 @@ const CreatePostModal = ({
         token || ""
       ),
     onSuccess: (data) => {
-      console.log(data);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       setCreatePostModal(false);
     },
     onError: (err) => {

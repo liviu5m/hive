@@ -26,6 +26,10 @@ public class PostService {
         return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public List<Post> findPostsByUserId(Long userId) {
+        return postRepository.findAllByPosterIdOrderByCreatedAtDesc(userId);
+    }
+
     public Optional<Post> findById(Long id) {
         return postRepository.findById(id);
     }

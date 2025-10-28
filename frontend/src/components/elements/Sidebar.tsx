@@ -6,7 +6,6 @@ import {
   PlusCircle,
   Search,
   User,
-  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -48,17 +47,6 @@ const Sidebar = () => {
             >
               <MessageCircle />
               <span>Messages</span>
-            </Link>
-            <Link
-              to={"/connections"}
-              className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg font-semibold ${
-                pathname == "/connections"
-                  ? "text-[#4F39F6] bg-[#EEF2FF]"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <Users />
-              <span>Connections</span>
             </Link>
             <Link
               to={"/discover"}

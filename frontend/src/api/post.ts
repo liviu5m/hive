@@ -20,3 +20,24 @@ export async function getPosts(token: string) {
   });
   return response.data;
 }
+
+export async function getPostsByUserId(userId: number, token: string) {
+  const response = await axios.get(`${baseUrl}/api/post/user`, {
+    params: {
+      userId,
+    },
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+}
+
+export async function getPostsById(id: number, token: string) {
+  const response = await axios.get(`${baseUrl}/api/post/${id}`, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+}

@@ -17,8 +17,12 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<?> getPosts() {
-        System.out.println(postService.findAll());
         return ResponseEntity.ok(postService.findAll());
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getPostsByUserId(@RequestParam Long userId) {
+        return ResponseEntity.ok(postService.findPostsByUserId(userId));
     }
 
     @GetMapping("/{id}")

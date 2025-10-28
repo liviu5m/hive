@@ -59,3 +59,11 @@ export type Reply = {
   content: string;
   createdAt: string;
 };
+
+export type Message = {
+  id: string;
+  sender: User;
+  receiver: User;
+  content: string;
+  createdAt: string;
+};

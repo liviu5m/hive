@@ -75,14 +75,15 @@ export async function getFollowRequestByIds(
 export async function getFollowRequests(
   followerId: number,
   followingId: number,
-  status: string,
+  status: string | null,
   token: string
 ) {
+  
   const response = await axios.get(`${baseUrl}/api/follow-request`, {
     params: {
       followerId,
       followingId,
-      status,
+      status
     },
     headers: {
       Authorization: "Bearer " + token,

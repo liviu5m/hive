@@ -17,6 +17,7 @@ import {
   getCommentsAndRepliesByPostId,
   getCommentsByPostId,
 } from "@/api/comment";
+import { Link } from "react-router-dom";
 
 const PostCard = ({ post }: { post: Post }) => {
   const { user, token } = useAppContext();
@@ -67,22 +68,27 @@ const PostCard = ({ post }: { post: Post }) => {
       queryFn: () => getCommentsAndRepliesByPostId(post.id, token || ""),
     });
 
-  console.log(comments, commentPageSize);
-
   return isPendingLikes || isPendingComment || isCommentsCounterLoading ? (
     <Loader />
   ) : (
     <div className="shadow p-5 rounded-lg bg-white">
       <div className="flex items-center gap-4">
         <div>
-          <img
-            src={post.poster.profilePicture}
-            alt=""
-            className="rounded-full w-10 h-10 object-cover"
-          />
+          <Link to={"/profile/" + user?.id}>
+            <img
+              src={post.poster.profilePicture}
+              alt=""
+              className="rounded-full w-10 h-10 object-cover"
+            />
+          </Link>
         </div>
         <div>
-          <h3 className="text-lg font-semibold">{post.poster.name}</h3>
+          <Link
+            to={"/profile/" + user?.id}
+            className="text-lg font-semibold hover:text-[#4F39F6] cursor-pointer"
+          >
+            {post.poster.name}
+          </Link>
           <h4 className="flex items-center gap-2 text-gray-600">
             <span>@{post.poster.username}</span>·
             <span>{getTimeAgo(post.createdAt)}</span>
@@ -110,12 +116,14 @@ const PostCard = ({ post }: { post: Post }) => {
                 src={images[1]}
                 className="aspect-square rounded-lg object-cover"
               />
-              <div
-                className="absolute w-full h-full rounded-lg top-0 left-0 flex items-center justify-center text-white text-3xl bg-black/30 cursor-pointer"
-                onClick={() => setIsCarouselOpened(true)}
-              >
-                <h1>+2</h1>
-              </div>
+              {images.length > 2 && (
+                <div
+                  className="absolute w-full h-full rounded-lg top-0 left-0 flex items-center justify-center text-white text-3xl bg-black/30 cursor-pointer"
+                  onClick={() => setIsCarouselOpened(true)}
+                >
+                  <h1>+2</h1>
+                </div>
+              )}
             </div>
           </div>
         )}

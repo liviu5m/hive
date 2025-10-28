@@ -10,7 +10,7 @@ const Home = () => {
   const { user, token } = useAppContext();
 
   const { data: posts, isPending, error } = useQuery({
-    queryKey: ["post"],
+    queryKey: ["posts"],
     queryFn: () => getPosts(token || ""),
   });
 

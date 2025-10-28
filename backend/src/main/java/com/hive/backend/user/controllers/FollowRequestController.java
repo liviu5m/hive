@@ -20,7 +20,7 @@ public class FollowRequestController {
     }
 
     @GetMapping
-    public List<FollowRequest> getFollowRequests(@RequestParam Long followerId, @RequestParam Long followingId, @RequestParam FollowRequestStatus status) {
+    public List<FollowRequest> getFollowRequests(@RequestParam Long followerId, @RequestParam Long followingId, @RequestParam(required = false) FollowRequestStatus status) {
         return followRequestService.findRequests(followerId, followingId, status);
     }
 
