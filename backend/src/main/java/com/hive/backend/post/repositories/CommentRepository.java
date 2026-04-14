@@ -14,14 +14,17 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Page<Comment> findByPostId(Long postId, Pageable pageable);
-    @Query(value = """
-        SELECT COUNT(*) AS total_count 
-        FROM (
-            SELECT id FROM comment WHERE post_id = :postId
-            UNION ALL
-            SELECT id FROM reply WHERE comment_id IN (SELECT id FROM comment WHERE post_id = :postId)
-        ) AS combined
-        """, nativeQuery = true)
+    @Query("""
+    SELECT 
+        COALESCE(
+            (SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId), 
+            0
+        ) + 
+        COALESCE(
+            (SELECT COUNT(r) FROM Reply r WHERE r.comment.post.id = :postId), 
+            0
+        )
+    """)
     Long countCommentsAndRepliesByPostId(@Param("postId") Long postId);
 
 }

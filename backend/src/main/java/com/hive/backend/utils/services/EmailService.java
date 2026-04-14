@@ -2,28 +2,34 @@ package com.hive.backend.utils.services;
 
 
 import com.hive.backend.user.models.User;
+import com.hive.backend.user.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender emailSender;
+    @Value("${brevo.api-key}")
+    private String apiKey;
+    @Value("${brevo.url}")
+    private String url;
+    @Value("${brevo.support-email}")
+    private String supportEmail;
 
-    public void sendVerificationEmail(String to, String subject, String text) throws MessagingException {
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    private final RestClient restClient;
 
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(text, true);
-
-        emailSender.send(message);
+    public EmailService(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     public void sendVerificationEmailTemplate(User user) {
@@ -42,10 +48,24 @@ public class EmailService {
                 + "</body>"
                 + "</html>";
 
+        Map<String, Object> requestBody = Map.of(
+                "sender", Map.of("name", user.getName(), "email", user.getEmail()),
+                "to", List.of(Map.of("email", supportEmail, "name", "Hive")),
+                "subject", subject,
+                "htmlContent", htmlMessage
+        );
+
         try {
-            sendVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+            restClient.post()
+                    .uri(url)
+                    .header("api-key", apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(requestBody)
+                    .retrieve()
+                    .toBodilessEntity();
+            System.out.println("Email sent successfully to: " + user.getEmail());
+        } catch (Exception e) {
+            System.err.println("Failed to send email: " + e.getMessage());
         }
     }
 

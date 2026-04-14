@@ -16,8 +16,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getPosts() {
-        return ResponseEntity.ok(postService.findAll());
+    public ResponseEntity<?> getPosts(@RequestParam String search) {
+        return ResponseEntity.ok(postService.findAll(search));
     }
 
     @GetMapping("/user")

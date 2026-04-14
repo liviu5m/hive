@@ -46,15 +46,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             user.setProfilePicture(oauth2User.getAttribute("picture"));
             user.setProvider("google");
             user.setPassword(passwordEncoder.encode("google"));
-            user.setUsername(user.getEmail());
+            user.setUsername(user.getEmail() + System.currentTimeMillis());
             user.setName(oauth2User.getAttribute("name"));
             user.setEnabled(true);
             userRepository.save(user);
         }else user = optionalUser.get();
         System.out.println(user);
         try {
-            authenticationManagerProvider.getObject()
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), "google"));
+            if(user.getProvider().equals("credentials")) {
+                response.sendRedirect("http://localhost:5173/auth/login?error=provider_mismatch");
+                return;
+            }
             String jwtToken = jwtService.generateToken(user);
             Cookie jwtCookie = new Cookie("jwt", jwtToken);
             jwtCookie.setHttpOnly(false);
@@ -62,10 +64,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             jwtCookie.setPath("/");
             jwtCookie.setMaxAge(86400);
             response.addCookie(jwtCookie);
-            response.sendRedirect("http://localhost:5173/auth/google");
+            response.sendRedirect("http://localhost:5173/");
 
         }catch(Exception e) {
-            response.sendRedirect("http://localhost:5173/auth/login?error=true");
+            response.sendRedirect("http://localhost:5173/auth/login?error=default");
         }
     }
 }

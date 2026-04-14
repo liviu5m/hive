@@ -52,7 +52,7 @@ public class FollowRequestService {
         followRequestRepository.deleteByFollowerIdAndFollowingId(followerId, followingId);
     }
 
-    public FollowRequest getRequestByIds(Long followerId,  Long followingId) {
-        return followRequestRepository.findByFollowerIdAndFollowingId(followerId, followingId).orElseThrow(() -> new RuntimeException("Follow Request not found"));
+    public List<FollowRequest> getRequestByIds(Long followerId) {
+        return followRequestRepository.findByFollowerId(followerId);
     }
 }

@@ -12,4 +12,16 @@ public class UserDto {
     private String coverPicture;
     private String bio;
     private String location;
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", coverPicture='" + coverPicture + '\'' +
+                ", bio='" + bio + '\'' +
+                ", location='" + location + '\'' +
+                '}';
+    }
 }

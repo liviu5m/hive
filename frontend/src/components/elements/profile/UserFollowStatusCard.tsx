@@ -11,13 +11,13 @@ import { toast } from "react-toastify";
 import Loader from "../Loader";
 
 const UserFollowStatusCard = ({ user, type }: { user: User; type: string }) => {
-  const { user: loggedUser, token } = useAppContext();
+  const { user: loggedUser } = useAppContext();
   const [status, setStatus] = useState("");
   const queryClient = useQueryClient();
   const { mutate: createRequest, isPending: isCreating } = useMutation({
     mutationKey: ["create-follow-request"],
     mutationFn: () =>
-      createFollowRequest(loggedUser?.id || -1, user.id || -1, token || ""),
+      createFollowRequest(loggedUser?.id || -1, user.id || -1),
     onSuccess: (data) => {
       console.log(data);
       setStatus("PENDING");
@@ -31,7 +31,7 @@ const UserFollowStatusCard = ({ user, type }: { user: User; type: string }) => {
   const { mutate: deleteRequest } = useMutation({
     mutationKey: ["delete-follow-request"],
     mutationFn: () =>
-      deleteFollowRequest(loggedUser?.id || -1, user.id || -1, token || ""),
+      deleteFollowRequest(loggedUser?.id || -1, user.id || -1),
     onSuccess: (data) => {
       console.log(data);
       setStatus("");
@@ -45,7 +45,7 @@ const UserFollowStatusCard = ({ user, type }: { user: User; type: string }) => {
   const { data: followStatus, isPending } = useQuery({
     queryKey: ["follow-status-check", user.id],
     queryFn: () =>
-      getFollowRequestByIds(loggedUser?.id || -1, user.id, token || ""),
+      getFollowRequestByIds(loggedUser?.id || -1, user.id),
   });
 
   useEffect(() => {
@@ -55,20 +55,20 @@ const UserFollowStatusCard = ({ user, type }: { user: User; type: string }) => {
   console.log(status);
 
   return (
-    <div className="p-3 rounded-lg flex gap-4 w-full user-follow-request">
+    <div className="p-3 rounded-lg flex gap-3 md:gap-4 w-full user-follow-request">
       <div>
         <img
           src={user.profilePicture}
-          className="w-[40px] rounded-full aspect-square"
+          className="w-10 rounded-full aspect-square"
           alt=""
         />
       </div>
-      <div className="flex items-center justify-between w-full">
+      <div className="flex items-center justify-between w-full gap-3">
         <div>
           <h2 className="font-semibold">{user.name}</h2>
           <h4 className="text-gray-600">@{user.username}</h4>
         </div>
-        <div className="mt-3 flex items-center gap-5">
+        <div className="mt-3 flex items-center gap-3 md:gap-5">
           <button
             className={`flex items-center justify-center text-black border border-gray-200 gap-3 px-4 py-2 rounded-lg font-semibold w-fit hover:opacity-90 cursor-pointer  ${
               status ? "bg-[#4F39F6] text-white" : "hover:bg-gray-50"

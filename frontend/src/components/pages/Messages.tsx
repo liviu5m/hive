@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BodyLayout from "../layouts/BodyLayout";
-import { SearchIcon } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Plus, SearchIcon } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { User } from "@/lib/Types";
 import { RealtimeChat } from "../realtime-chat";
 import { useAppContext } from "@/lib/AppContext";
@@ -43,28 +43,37 @@ const messages = [
 const Messages = () => {
   const [activeChat, setActiveChat] = useState<User>();
   const { state } = useLocation();
-  const [contacts, setContacts] = useState<User[]>(
-    state ? [state.user] : []
-  );
-  const { user, token } = useAppContext();
-  console.log(contacts);
+  const [contacts, setContacts] = useState<User[]>(state ? [state.user] : []);
+  const { user } = useAppContext();
 
-  const { data: users } = useQuery({
+  const { data: users, isPending } = useQuery({
     queryKey: ["users-from-conversation"],
-    queryFn: () => getUsersFromConversation(user?.id || -1, token || ""),
+    queryFn: () => getUsersFromConversation(user?.id || -1),
   });
 
   useEffect(() => {
-    if (users) setContacts([...contacts, ...users]);
+    if (!users) return;
+
+    if (state?.user) {
+      if (users.find((u: User) => u.username === state.user.username)) {
+        setContacts(users);
+      } else {
+        setActiveChat(contacts[0]);
+        setContacts([...contacts, ...users]);
+      }
+    } else {
+      setContacts(users);
+      if (!activeChat && users.length > 0) setActiveChat(users[0]);
+    }
   }, [users]);
 
   return (
     user && (
       <BodyLayout>
-        <div className="w-[1000px] mt-5 h-[80vh]">
-          <h1 className="text-3xl font-bold">Messages</h1>
-          <div className="flex h-full bg-white rounded-xl shadow-sm overflow-hidden mt-10">
-            <div className="w-80 border-r flex flex-col">
+        <div className="w-full max-w-6xl mx-auto mt-5 h-[calc(100vh-8rem)] pb-20 lg:pb-6">
+          <h1 className="text-2xl md:text-3xl font-bold">Messages</h1>
+          <div className="flex h-full bg-white rounded-xl shadow-sm overflow-hidden mt-6 md:mt-10">
+            <div className={`${activeChat ? "hidden md:flex" : "flex"} w-full md:w-80 border-r flex-col`}>
               <div className="p-4 border-b">
                 <div className="relative">
                   <input
@@ -95,13 +104,6 @@ const Messages = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      {/* {contact.unread > 0 && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-xs text-white">
-                          {contact.unread}
-                        </span>
-                      </div>
-                    )} */}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline">
@@ -112,10 +114,26 @@ const Messages = () => {
                     </div>
                   </div>
                 ))}
+                <Link
+                  to={"/discover"}
+                  className="flex items-center justify-center py-4 gap-3 text-gray-600"
+                >
+                  <Plus />
+                  <span>Add More</span>
+                </Link>
               </div>
             </div>
             {activeChat && (
-              <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col w-full">
+                <div className="md:hidden border-b">
+                  <Link
+                    to={"/discover"}
+                    className="flex items-center justify-center py-3 gap-2 text-gray-600 hover:bg-gray-50"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="font-medium">Add More</span>
+                  </Link>
+                </div>
                 <ChatComponents currentUser={user} recipientUser={activeChat} />
               </div>
             )}

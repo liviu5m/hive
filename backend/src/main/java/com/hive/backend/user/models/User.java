@@ -19,9 +19,9 @@ import java.util.List;
 @Setter
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -71,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override
@@ -92,5 +92,26 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", coverPicture='" + coverPicture + '\'' +
+                ", bio='" + bio + '\'' +
+                ", location='" + location + '\'' +
+                ", provider='" + provider + '\'' +
+                ", enabled=" + enabled +
+                ", verificationCode='" + verificationCode + '\'' +
+                ", verificationCodeExpiresAt=" + verificationCodeExpiresAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

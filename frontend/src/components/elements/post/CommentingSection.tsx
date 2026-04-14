@@ -23,12 +23,12 @@ export function CommentSection({
 }: CommentSectionProps) {
   const [newComment, setNewComment] = useState("");
   const queryClient = useQueryClient();
-  const { user, token } = useAppContext();
+  const { user } = useAppContext();
 
   const { mutate: addComment } = useMutation({
     mutationKey: ["add-comment"],
     mutationFn: () =>
-      addCommentApi(postId, user?.id || -1, newComment, token || ""),
+      addCommentApi(postId, user?.id || -1, newComment),
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries({
@@ -44,7 +44,7 @@ export function CommentSection({
   return (
     <div className="border-t border-gray-100 pt-2 mt-4">
       <form
-        className="px-4 py-2 flex"
+        className="px-2 sm:px-4 py-2 flex"
         onSubmit={(e) => {
           e.preventDefault();
           addComment();
@@ -75,13 +75,13 @@ export function CommentSection({
         </div>
       </form>
       {comments.length > 0 && (
-        <div className="px-4 py-2 flex justify-between items-center border-b border-gray-100">
+        <div className="px-2 sm:px-4 py-2 flex justify-between items-center border-b border-gray-100">
           <span className="text-sm text-gray-500">
             {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
           </span>
         </div>
       )}
-      <div className="px-4 py-2 space-y-4 max-h-96 overflow-y-auto">
+      <div className="px-2 sm:px-4 py-2 space-y-4 max-h-80 sm:max-h-96 overflow-y-auto">
         {comments.map((comment: Comment) => (
           <CommentCard key={comment.id} comment={comment} />
         ))}

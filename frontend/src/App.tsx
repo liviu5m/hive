@@ -10,7 +10,6 @@ import Signup from "./components/pages/Signup";
 import Verify from "./components/pages/Verify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import GoogleAuth from "./components/pages/Google";
 import Profile from "./components/pages/Profile";
 import Discover from "./components/pages/Discover";
 import Messages from "./components/pages/Messages";
@@ -19,7 +18,7 @@ import Post from "./components/pages/Post";
 function App() {
   const queryClient = new QueryClient();
   return (
-    <div className="bg-[#F9FAFB]">
+    <div className="bg-[#F9FAFB] min-h-screen">
       <QueryClientProvider client={queryClient}>
         <AppProvider>
           <BrowserRouter>
@@ -45,8 +44,7 @@ function App() {
                     <Routes>
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
-                      <Route path="/google" element={<GoogleAuth />} />
-                      <Route path="/verify/:id" element={<Verify />} />
+                      <Route path="/verify" element={<Verify />} />
                     </Routes>
                   </NonAuthRequiredRoute>
                 }

@@ -23,7 +23,7 @@ interface CommentProps {
   comment: Comment;
 }
 export function CommentCard({ comment }: CommentProps) {
-  const { user, token } = useAppContext();
+  const { user } = useAppContext();
   const queryClient = useQueryClient();
   const [isReplying, setIsReplying] = useState(false);
   const [isCommentUpdating, setIsCommentUpdating] = useState(false);
@@ -31,7 +31,7 @@ export function CommentCard({ comment }: CommentProps) {
 
   const { mutate: deleteComment } = useMutation({
     mutationKey: ["delete-comment"],
-    mutationFn: () => deleteCommentApi(comment.id, token || ""),
+    mutationFn: () => deleteCommentApi(comment.id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["post-comments"] });
       console.log(data);
@@ -42,7 +42,7 @@ export function CommentCard({ comment }: CommentProps) {
   });
   const { mutate: updateComment } = useMutation({
     mutationKey: ["update-comment"],
-    mutationFn: () => updateCommentApi(comment.id, commentContent, token || ""),
+    mutationFn: () => updateCommentApi(comment.id, commentContent),
     onSuccess: (data) => {
       console.log(data);
       setIsCommentUpdating(false);
@@ -56,7 +56,7 @@ export function CommentCard({ comment }: CommentProps) {
   const { mutate: addCommentLike } = useMutation({
     mutationKey: ["add-comment-like"],
     mutationFn: () =>
-      addCommentLikeApi(comment.id, user?.id || -1, token || ""),
+      addCommentLikeApi(comment.id, user?.id || -1),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["comment-likes", comment.id],
@@ -67,7 +67,7 @@ export function CommentCard({ comment }: CommentProps) {
   const { mutate: removeCommentLike } = useMutation({
     mutationKey: ["remove-comment-like"],
     mutationFn: (commentLikeId: number) =>
-      removeCommentLikeApi(commentLikeId, token || ""),
+      removeCommentLikeApi(commentLikeId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["comment-likes", comment.id],
@@ -77,19 +77,19 @@ export function CommentCard({ comment }: CommentProps) {
 
   const { data: commentLikes, isPending } = useQuery({
     queryKey: ["comment-likes", comment.id],
-    queryFn: () => getCommentLikes(comment.id, token || ""),
+    queryFn: () => getCommentLikes(comment.id),
   });
 
   return (
     !isPending && (
       <div className="comment">
-        <div className="flex">
+        <div className="flex min-w-0">
           <img
             src={comment.user.profilePicture}
             alt={comment.user.name}
             className="w-8 h-8 rounded-full object-cover"
           />
-          <div className="ml-2 flex-1">
+          <div className="ml-2 flex-1 min-w-0">
             <div className="bg-gray-100 rounded-lg px-3 py-2 relative">
               <div className="font-medium text-sm">{comment.user.name}</div>
               {isCommentUpdating ? (

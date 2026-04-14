@@ -19,7 +19,7 @@ import {
 import { deleteReplyApi, updateReplyApi } from "@/api/reply";
 
 const ReplyCard = ({ reply }: { reply: Reply }) => {
-  const { user, token } = useAppContext();
+  const { user } = useAppContext();
   const queryClient = useQueryClient();
   const [isReplyUpdating, setIsReplyUpdating] = useState(false);
   const [replyContent, setReplyContent] = useState(reply.content);
@@ -29,12 +29,12 @@ const ReplyCard = ({ reply }: { reply: Reply }) => {
     error,
   } = useQuery({
     queryKey: ["reply-likes", reply.id],
-    queryFn: () => getReplyLikesByCommentId(reply.id, token || ""),
+    queryFn: () => getReplyLikesByCommentId(reply.id),
   });
 
   const { mutate: addReplyLike } = useMutation({
     mutationKey: ["add-reply-like", reply.id],
-    mutationFn: () => addReplyLikeApi(reply.id, user?.id || -1, token || ""),
+    mutationFn: () => addReplyLikeApi(reply.id, user?.id || -1),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reply-likes"] });
     },
@@ -43,7 +43,7 @@ const ReplyCard = ({ reply }: { reply: Reply }) => {
   const { mutate: removeReplyLike } = useMutation({
     mutationKey: ["remove-reply-like", reply.id],
     mutationFn: (replyLikeId: number) =>
-      removeReplyLikeApi(replyLikeId, token || ""),
+      removeReplyLikeApi(replyLikeId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reply-likes"] });
     },
@@ -51,7 +51,7 @@ const ReplyCard = ({ reply }: { reply: Reply }) => {
 
   const { mutate: updateReply } = useMutation({
     mutationKey: ["update-reply-like", reply.id],
-    mutationFn: () => updateReplyApi(reply.id, replyContent, token || ""),
+    mutationFn: () => updateReplyApi(reply.id, replyContent),
     onSuccess: (data) => {
       console.log(data);
       setIsReplyUpdating(false);
@@ -64,7 +64,7 @@ const ReplyCard = ({ reply }: { reply: Reply }) => {
 
   const { mutate: deleteReply } = useMutation({
     mutationKey: ["update-reply-like", reply.id],
-    mutationFn: () => deleteReplyApi(reply.id, token || ""),
+    mutationFn: () => deleteReplyApi(reply.id),
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries({ queryKey: ["comment-reply"] });
@@ -76,13 +76,13 @@ const ReplyCard = ({ reply }: { reply: Reply }) => {
 
   return (
     !isPendingRepliesLike && (
-      <div key={reply.id} className="flex">
+      <div key={reply.id} className="flex min-w-0">
         <img
           src={reply.user.profilePicture}
           alt={reply.user.name}
           className="w-6 h-6 rounded-full object-cover"
         />
-        <div className="ml-2 flex-1">
+        <div className="ml-2 flex-1 min-w-0">
           <div className="bg-gray-100 rounded-lg px-3 py-2 relative">
             <div className="font-medium text-sm">{reply.user.name}</div>
             {isReplyUpdating ? (

@@ -20,4 +20,15 @@ public class RegisterUserDto {
     private String password;
     @NotBlank(message = "Password Confirmation is required")
     private String passwordConfirmation;
+
+    @Override
+    public String toString() {
+        return "RegisterUserDto{" +
+                "name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", passwordConfirmation='" + passwordConfirmation + '\'' +
+                '}';
+    }
 }

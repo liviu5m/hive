@@ -25,7 +25,6 @@ export const RealtimeChat = ({
 }: RealtimeChatProps) => {
   const { containerRef, scrollToBottom } = useChatScroll();
   const [edit, setEdit] = useState("");
-  const { token } = useAppContext();
   const queryClient = useQueryClient();
   const {
     messages: realtimeMessages,
@@ -78,7 +77,7 @@ export const RealtimeChat = ({
 
   const { mutate: editMessage } = useMutation({
     mutationKey: ["update-message", edit],
-    mutationFn: (content: string) => updateMessage(edit, content, token || ""),
+    mutationFn: (content: string) => updateMessage(edit, content),
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries({ queryKey: ["messages", roomName] });
@@ -90,7 +89,7 @@ export const RealtimeChat = ({
 
   return (
     <div className="flex flex-col h-full w-full bg-background text-foreground antialiased">
-      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {allMessages.length === 0 ? (
           <div className="text-center text-sm text-muted-foreground">
             No messages yet. Start the conversation!
@@ -123,7 +122,7 @@ export const RealtimeChat = ({
 
       <form
         onSubmit={handleSendMessage}
-        className="flex w-full gap-2 border-t border-border p-4"
+        className="flex w-full gap-2 border-t border-border p-3 sm:p-4"
       >
         <Input
           className={cn(

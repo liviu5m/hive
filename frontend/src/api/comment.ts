@@ -6,7 +6,6 @@ export async function addCommentApi(
   postId: number,
   userId: number,
   content: string,
-  token: string
 ) {
   const response = await axios.post(
     `${baseUrl}/api/comment`,
@@ -16,38 +15,28 @@ export async function addCommentApi(
       content,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function deleteCommentApi(commentId: number, token: string) {
+export async function deleteCommentApi(commentId: number) {
   const response = await axios.delete(`${baseUrl}/api/comment/${commentId}`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function updateCommentApi(
-  commentId: number,
-  content: string,
-  token: string
-) {
+export async function updateCommentApi(commentId: number, content: string) {
   const response = await axios.put(
     `${baseUrl}/api/comment/${commentId}`,
     {
       content,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
@@ -56,26 +45,18 @@ export async function getCommentsByPostId(
   postId: number,
   commentPage: number,
   commentPageSize: number,
-  token: string
 ) {
   const response = await axios.get(`${baseUrl}/api/comment`, {
     params: { postId, page: commentPage, size: commentPageSize },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function getCommentsAndRepliesByPostId(
-  postId: number,
-  token: string
-) {
+export async function getCommentsAndRepliesByPostId(postId: number) {
   const response = await axios.get(`${baseUrl}/api/comment/reply`, {
     params: { postId },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }

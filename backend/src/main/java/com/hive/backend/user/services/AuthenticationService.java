@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -31,6 +32,11 @@ public class AuthenticationService {
 
     public User signup(RegisterUserDto input) {
         if(!input.getPassword().equals(input.getPasswordConfirmation())) throw new RuntimeException("Passwords do not match");
+        System.out.println(input);
+        Optional<User> userUsername = userRepository.findByUsernameContainingIgnoreCase(input.getUsername());
+        if(userUsername.isPresent()) throw new RuntimeException("Username already used");
+        Optional<User> userEmail = userRepository.findByEmail(input.getEmail());
+        if(userEmail.isPresent()) throw new RuntimeException("Email already used");
         User user = new User(input.getName(), input.getUsername(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
         user.setEnabled(false);
         user.setVerificationCode(generateSixDigitCode());

@@ -4,7 +4,7 @@ import { useAppContext } from "@/lib/AppContext";
 import { UserDto } from "@/lib/Types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Camera } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 type Picture = {
@@ -18,7 +18,7 @@ const ProfileEditModal = ({
 }: {
   setEditModal: (e: boolean) => void;
 }) => {
-  const { user, token, setUser } = useAppContext();
+  const { user } = useAppContext();
   const queryClient = useQueryClient();
   const [profilePicture, setProfilePicture] = useState<Picture>({
     file: null,
@@ -35,17 +35,16 @@ const ProfileEditModal = ({
     coverPicture: user?.coverPicture || "",
     name: user?.name || "",
     username: user?.username || "",
-    bio: "",
-    location: "",
+    bio: user?.bio || "",
+    location: user?.location || "",
   });
 
-  const { mutate: updateUserData } = useMutation({
+  const { mutate: updateUserData, isPending: isProfileUpdating } = useMutation({
     mutationKey: ["update-user"],
-    mutationFn: (userData: UserDto) =>
-      updateUser(user?.id || -1, userData, token || ""),
+    mutationFn: (userData: UserDto) => updateUser(user?.id || -1, userData),
     onSuccess: (data) => {
-      console.log(data);
-      queryClient.invalidateQueries({ queryKey: ["logged-user", token] });
+      queryClient.invalidateQueries({ queryKey: ["logged-user"] });
+      queryClient.invalidateQueries({ queryKey: ["profile-user", user?.id] });
       toast("User updated successfully");
       setEditModal(false);
     },
@@ -57,10 +56,10 @@ const ProfileEditModal = ({
   const { mutate: uploadProfileImage, isPending: isProfileImagePending } =
     useMutation({
       mutationKey: ["upload-image"],
-      mutationFn: (file: File | null) =>
-        uploadImageOnCloudinary(file, token || ""),
+      mutationFn: (file: File | null) => uploadImageOnCloudinary(file),
       onSuccess: (data) => {
         setUserData({ ...userData, profilePicture: data });
+        queryClient.invalidateQueries({ queryKey: ["logged-user"] });
         console.log(data);
       },
       onError: (err) => {
@@ -71,10 +70,10 @@ const ProfileEditModal = ({
   const { mutate: uploadCoverImage, isPending: isCoverImagePending } =
     useMutation({
       mutationKey: ["upload-image"],
-      mutationFn: (file: File | null) =>
-        uploadImageOnCloudinary(file, token || ""),
+      mutationFn: (file: File | null) => uploadImageOnCloudinary(file),
       onSuccess: (data) => {
         setUserData({ ...userData, coverPicture: data });
+        queryClient.invalidateQueries({ queryKey: ["logged-user"] });
       },
       onError: (err) => {
         console.log(err);
@@ -82,9 +81,9 @@ const ProfileEditModal = ({
     });
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-50">
-      <div className="flex items-center justify-center h-screen">
-        <div className="bg-white w-[600px] p-10 rounded-lg shadow z-20 flex flex-col items-center justify-center">
+    <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 z-50 p-4">
+      <div className="flex items-center justify-center h-full">
+        <div className="bg-white w-full max-w-xl p-4 sm:p-6 md:p-8 rounded-lg shadow z-20 flex flex-col items-center justify-center max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between text-lg w-full">
             <h1 className="font-semibold text-2xl">Edit Profile</h1>
           </div>
@@ -133,11 +132,11 @@ const ProfileEditModal = ({
                         ? profilePicture.previewUrl
                         : userData.profilePicture
                     }
-                    className="w-[100px] aspect-square object-cover rounded-full"
+                    className="w-24 md:w-28 aspect-square object-cover rounded-full"
                   />
                   <div
                     className={`
-                    absolute inset-0 w-[100px] h-[100px] bg-black bg-opacity-50 rounded-full 
+                    absolute inset-0 w-24 md:w-28 h-24 md:h-28 bg-black bg-opacity-50 rounded-full 
                     flex items-center justify-center transition-opacity duration-300
                     ${profilePicture.hover ? "opacity-80" : "opacity-0"}
                   `}
@@ -272,12 +271,17 @@ const ProfileEditModal = ({
                 Cancel
               </button>
               <button
-                className={`flex items-center justify-center text-white gap-3 px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 w-fit hover:opacity-90 ${
+                className={`flex items-center justify-center text-white gap-3 px-4 py-2 rounded-lg font-semibold bg-gradient-to-r cursor-pointer from-cyan-500 to-blue-500 w-fit hover:opacity-90 ${
                   isCoverImagePending || (isProfileImagePending && "opacity-10")
                 }`}
                 type="submit"
                 disabled={isCoverImagePending || isProfileImagePending}
               >
+                {isProfileUpdating ||
+                  isCoverImagePending ||
+                  (isProfileImagePending && (
+                    <div className="w-5 h-5 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+                  ))}
                 Save Changes
               </button>
             </div>

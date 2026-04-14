@@ -1,20 +1,20 @@
+import { useAppContext } from "@/lib/AppContext";
+import React from "react";
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-interface NonAuthRequiredRouteProps {
+interface AuthRequiredRouteProps {
   children: ReactNode;
 }
 
-const NonAuthRequiredRoute: React.FC<NonAuthRequiredRouteProps> = ({
-  children,
-}) => {
-  const location = useLocation();
-
-  if (localStorage.getItem("token")) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+const AuthRequiredRoute: React.FC<AuthRequiredRouteProps> = ({ children }) => {
+  const { user } = useAppContext();
+  
+  if (user) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
 };
 
-export default NonAuthRequiredRoute;
+export default AuthRequiredRoute;

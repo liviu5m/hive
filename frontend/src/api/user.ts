@@ -37,51 +37,56 @@ export async function resendVerificationCode(userId: string) {
 }
 
 export async function loginUserApi(loginData: LoginData) {
-  const response = await axios.post(`${baseUrl}/auth/login`, loginData);
-  return response.data;
-}
-
-export async function getAuthenticatedUser(token: string) {
-  const response = await axios.get(`${baseUrl}/api/user/me`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+  const response = await axios.post(`${baseUrl}/auth/login`, loginData, {
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function updateUser(
-  userId: number,
-  userDto: UserDto,
-  token: string
-) {
+export async function getAuthenticatedUser() {
+  const response = await axios.get(`${baseUrl}/auth/jwt`, {
+    withCredentials: true,
+  });
+  return response.data;
+}
+
+export async function updateUser(userId: number, userDto: UserDto) {
   const response = await axios.put(`${baseUrl}/api/user/${userId}`, userDto, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function getAllUsers(search: string, token: string, pageSize: number, page: number) {
+export async function getAllUsers(
+  search: string,
+  pageSize: number,
+  page: number,
+) {
   const response = await axios.get(`${baseUrl}/api/user`, {
     params: {
       search,
       page,
-      size: pageSize
+      size: pageSize,
     },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function getUserById(id: number, token: string) {
+export async function getUserById(id: number) {
   const response = await axios.get(`${baseUrl}/api/user/${id}`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    }
-  })
+    withCredentials: true,
+  });
+  return response.data;
+}
+
+export async function logoutUser() {
+  const response = await axios.post(
+    `${baseUrl}/auth/logout`,
+    {},
+    {
+      withCredentials: true,
+    },
+  );
   return response.data;
 }

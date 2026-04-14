@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { loginUserApi, resendVerificationCode } from "@/api/user";
-import { useAppContext } from "@/lib/AppContext";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 const Login = () => {
-  const { setToken } = useAppContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -21,12 +21,9 @@ const Login = () => {
     mutationFn: (id: string) => resendVerificationCode(id),
     onSuccess: (data) => {
       console.log(data);
-      toast("Code resent successful");
     },
     onError: (err: AxiosError) => {
       console.log(err);
-      toast(err.response?.data as string);
-      toast(err.response?.data as string);
     },
   });
 
@@ -35,8 +32,6 @@ const Login = () => {
     mutationFn: () => loginUserApi(loginData),
     onSuccess: (data) => {
       console.log(data);
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
       navigate("/");
     },
     onError: (err: AxiosError) => {
@@ -54,12 +49,11 @@ const Login = () => {
         }
       }
       if (errorMessage.split("|").length == 1) toast(errorMessage);
-      console.log(errorMessage.split("|").length);
 
       if (errorMessage.startsWith("Account not enabled")) {
         resend(errorMessage.split("|")[1]);
-        navigate("/auth/verify/" + errorMessage.split("|")[1], {
-          state: { fromSignup: true },
+        navigate("/auth/verify", {
+          state: { verification: true, id: errorMessage.split("|")[1] },
         });
       }
     },
@@ -70,10 +64,29 @@ const Login = () => {
       import.meta.env.VITE_API_URL + "/oauth2/authorization/google";
   };
 
+  useEffect(() => {
+    const errorType = searchParams.get("error");
+
+    if (errorType) {
+      const messages: Record<string, string> = {
+        provider_mismatch:
+          "This account uses a different login method (e.g., Credentials).",
+        default: "An error occurred during authentication.",
+      };
+
+      setErrorMessage(messages[errorType] || messages.default);
+      searchParams.delete("error");
+      setSearchParams(searchParams, { replace: true });
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+    }
+  }, [searchParams, setSearchParams]);
+
   return (
-    <div className="flex items-center justify-center h-screen bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-500 to-90%">
-      <div className="container flex items-center justify-between">
-        <div>
+    <div className="flex items-center justify-center min-h-screen bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-500 to-90% p-4">
+      <div className="container flex items-center justify-between gap-8">
+        <div className="hidden lg:block">
           <div className="top-10">
             <div className="flex items-center gap-3 py-5">
               <img src="/imgs/logo.png" className="w-10" />
@@ -81,7 +94,7 @@ const Login = () => {
             </div>
           </div>
           <div>
-            <h1 className="text-6xl font-bold text-[#1E1A4E]">
+            <h1 className="text-5xl font-bold text-[#1E1A4E]">
               More than just friends truly
               <br /> connect
             </h1>
@@ -91,8 +104,8 @@ const Login = () => {
             </h4>
           </div>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="bg-white px-10 py-8 rounded-lg shadow w-[400px]">
+        <div className="flex justify-between items-center w-full lg:w-auto">
+          <div className="bg-white px-5 sm:px-8 md:px-10 py-8 rounded-lg shadow w-full max-w-md mx-auto">
             <div className="mb-7">
               <h1 className="text-center text-xl font-semibold">
                 Log in into Hive
@@ -100,7 +113,10 @@ const Login = () => {
               <h3 className="text-gray-700 mt-1 text-center">
                 Welcome back! Please log in to continue
               </h3>
-              <button className="flex items-center justify-center gap-5 my-5 border border-gray-200 rounded-lg w-full py-2 hover:bg-gray-50 cursor-pointer mb-5" onClick={() => logInWithGoogle()}>
+              <button
+                className="flex items-center justify-center gap-5 my-5 border border-gray-200 rounded-lg w-full py-2 hover:bg-gray-50 cursor-pointer mb-5"
+                onClick={() => logInWithGoogle()}
+              >
                 <img src="/imgs/google.png" className="w-5" alt="" />
                 <h4>Google</h4>
               </button>
@@ -111,8 +127,13 @@ const Login = () => {
                 Or
               </h4>
             </div>
+            {errorMessage && (
+              <p className="bg-red-100 text-red-700 px-4 py-2 rounded mt-16">
+                {errorMessage}
+              </p>
+            )}
             <form
-              className="mt-5 pt-7"
+              className="pt-7"
               onSubmit={(e) => {
                 e.preventDefault();
                 loginUser();

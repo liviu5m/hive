@@ -1,15 +1,17 @@
+import { useAppContext } from "@/lib/AppContext";
+import React from "react";
 import type { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate} from "react-router-dom";
 
 interface AuthRequiredRouteProps {
   children: ReactNode;
 }
 
 const AuthRequiredRoute: React.FC<AuthRequiredRouteProps> = ({ children }) => {
-  const location = useLocation();
+  const { user } = useAppContext();
 
-  if (!localStorage.getItem("token")) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  if (!user) {
+    return <Navigate to="/auth/login" replace />;
   }
 
   return <>{children}</>;

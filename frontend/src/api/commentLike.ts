@@ -2,11 +2,7 @@ import axios from "axios";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export async function addCommentLikeApi(
-  commentId: number,
-  userId: number,
-  token: string
-) {
+export async function addCommentLikeApi(commentId: number, userId: number) {
   const response = await axios.post(
     `${baseUrl}/api/comment-like`,
     {
@@ -14,37 +10,28 @@ export async function addCommentLikeApi(
       userId,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function removeCommentLikeApi(
-  commentLikeId: number,
-  token: string
-) {
+export async function removeCommentLikeApi(commentLikeId: number) {
   const response = await axios.delete(
     `${baseUrl}/api/comment-like/${commentLikeId}`,
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function getCommentLikes(commentId: number, token: string) {
+export async function getCommentLikes(commentId: number) {
   const response = await axios.get(`${baseUrl}/api/comment-like`, {
     params: {
       commentId,
     },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }

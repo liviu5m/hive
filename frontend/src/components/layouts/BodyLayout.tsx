@@ -12,8 +12,8 @@ const BodyLayout: React.FC<LayoutProps> = ({ children }) => {
     <AppProvider>
       <div className="flex justify-center text-[#121212] bg-[#F9FAFB] min-h-screen w-full">
         <Sidebar />
-        <div className="w-[325px]"></div>
-        <div>{children}</div>
+        <div className="hidden lg:block lg:w-80"></div>
+        <div className="w-full px-4 pb-6 sm:px-6 lg:px-8">{children}</div>
       </div>
     </AppProvider>
   );

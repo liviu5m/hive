@@ -13,11 +13,19 @@ import { AxiosError } from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
 const Verify = () => {
-  const { id } = useParams<{ id: string }>();
   const [code, setCode] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const [error, setError] = useState("a");
+  const [id, setId] = useState("");
+  
+  useEffect(() => {
+    console.log(location.state);
+    
+    if (!location.state?.verification) {
+      navigate("/", { replace: true });
+    } else setId(location.state.id);
+  }, [location, navigate]);
 
   const { mutate: verify } = useMutation({
     mutationKey: ["verify-account"],
@@ -49,17 +57,11 @@ const Verify = () => {
     },
   });
 
-  useEffect(() => {
-    if (!location.state?.fromSignup) {
-      navigate("/auth/signup", { replace: true });
-    }
-  }, [location, navigate]);
-
   return (
-    <div className="flex items-center justify-center h-screen bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-500 to-90%">
+    <div className="flex items-center justify-center min-h-screen bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-500 to-90% p-4">
       <div className="container flex items-center justify-center">
-        <div className="flex justify-between items-center">
-          <div className="bg-white px-10 py-8 rounded-lg shadow w-[400px] flex flex-col items-center justify-center">
+        <div className="flex justify-between items-center w-full">
+          <div className="bg-white px-5 sm:px-8 md:px-10 py-8 rounded-lg shadow w-full max-w-md mx-auto flex flex-col items-center justify-center">
             <div>
               <h1 className="text-center text-xl font-semibold">
                 Verify Your Account

@@ -6,7 +6,6 @@ export async function addReplyApi(
   content: string,
   userId: number,
   commentId: number,
-  token: string
 ) {
   const response = await axios.post(
     `${baseUrl}/api/reply`,
@@ -16,48 +15,36 @@ export async function addReplyApi(
       content,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function getRepliesByCommentId(commentId: number, token: string) {
+export async function getRepliesByCommentId(commentId: number) {
   const response = await axios.get(`${baseUrl}/api/reply`, {
     params: { commentId },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function deleteReplyApi(replyId: number, token: string) {
+export async function deleteReplyApi(replyId: number) {
   const response = await axios.delete(`${baseUrl}/api/reply/${replyId}`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
 
-export async function updateReplyApi(
-  replyId: number,
-  content: string,
-  token: string
-) {
+export async function updateReplyApi(replyId: number, content: string) {
   const response = await axios.put(
     `${baseUrl}/api/reply/${replyId}`,
     {
       content,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }

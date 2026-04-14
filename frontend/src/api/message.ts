@@ -7,16 +7,13 @@ const baseUrl = import.meta.env.VITE_API_URL;
 export async function getMessagesBySenderIdAndReceiverId(
   senderId: number,
   receiverId: number,
-  token: string
 ) {
   const response = await axios.get(`${baseUrl}/api/message`, {
     params: {
       senderId,
       receiverId,
     },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }
@@ -25,25 +22,22 @@ export async function createMessage(
   message: ChatMessage,
   senderId: number,
   receiverId: number,
-  token: string
 ) {
   const response = await axios.post(
     `${baseUrl}/api/message`,
-    { ...message, senderId, receiverId },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      ...message,
+      senderId,
+      receiverId,
+    },
+    {
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function updateMessage(
-  id: string,
-  content: string,
-  token: string
-) {
+export async function updateMessage(id: string, content: string) {
   console.log(id, content);
 
   const response = await axios.put(
@@ -52,31 +46,23 @@ export async function updateMessage(
       content,
     },
     {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
+      withCredentials: true,
+    },
   );
   return response.data;
 }
 
-export async function deleteMessage(id: string, token: string) {
-  const response = await axios.delete(`${baseUrl}/api/message/${id}`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  });
+export async function deleteMessage(id: string) {
+  const response = await axios.delete(`${baseUrl}/api/message/${id}`);
   return response.data;
 }
 
-export async function getUsersFromConversation(userId: number, token: string) {
+export async function getUsersFromConversation(userId: number) {
   const response = await axios.get(`${baseUrl}/api/message/user`, {
     params: {
       userId,
     },
-    headers: {
-      Authorization: "Bearer " + token,
-    },
+    withCredentials: true,
   });
   return response.data;
 }

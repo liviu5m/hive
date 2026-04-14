@@ -22,8 +22,8 @@ public class PostService {
         this.userRepository = userRepository;
     }
 
-    public List<Post> findAll() {
-        return postRepository.findAllByOrderByCreatedAtDesc();
+    public List<Post> findAll(String search) {
+        return postRepository.searchPosts(search);
     }
 
     public List<Post> findPostsByUserId(Long userId) {

@@ -14,7 +14,7 @@ const ReplySection = ({
   isReplying: boolean;
   commentId: number;
 }) => {
-  const { user, token } = useAppContext();
+  const { user } = useAppContext();
   const [replyContent, setReplyContent] = useState("");
   const [showReplies, setShowReplies] = useState(false);
   const queryClient = useQueryClient();
@@ -22,7 +22,7 @@ const ReplySection = ({
   const { mutate: addReply } = useMutation({
     mutationKey: ["add-reply"],
     mutationFn: () =>
-      addReplyApi(replyContent, user?.id || -1, commentId, token || ""),
+      addReplyApi(replyContent, user?.id || -1, commentId),
     onSuccess: (data) => {
       console.log(data);
       setReplyContent("");
@@ -35,7 +35,7 @@ const ReplySection = ({
 
   const { data: replies, isPending } = useQuery({
     queryKey: ["comment-reply", commentId],
-    queryFn: () => getRepliesByCommentId(commentId, token || ""),
+    queryFn: () => getRepliesByCommentId(commentId),
   });
 
   return (
@@ -54,7 +54,7 @@ const ReplySection = ({
               alt="Current User"
               className="w-6 h-6 rounded-full object-cover mr-2"
             />
-            <div className="flex-1 relative">
+            <div className="flex-1 relative min-w-0">
               <input
                 type="text"
                 value={replyContent}

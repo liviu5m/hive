@@ -84,7 +84,7 @@ const PaginationSystem: React.FC<PaginationProps> = ({
 
   return (
     <Pagination>
-      <PaginationContent>
+      <PaginationContent className="flex-wrap justify-center">
         <PaginationItem>
           <PaginationPrevious
             href="#"

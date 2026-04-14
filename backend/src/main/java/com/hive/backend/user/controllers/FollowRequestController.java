@@ -25,8 +25,8 @@ public class FollowRequestController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> getRequestByIds(@RequestParam Long followerId, @RequestParam Long followingId) {
-        return ResponseEntity.ok(followRequestService.getRequestByIds(followerId, followingId));
+    public ResponseEntity<?> getRequestByIds(@RequestParam Long followerId) {
+        return ResponseEntity.ok(followRequestService.getRequestByIds(followerId));
     }
 
     @PostMapping

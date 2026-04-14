@@ -24,13 +24,12 @@ export const ChatMessageItem = ({
   setNewMessage,
 }: ChatMessageItemProps) => {
   const MENU_ID = "my-menu-" + message.id;
-  const { token } = useAppContext();
   const queryClient = useQueryClient();
   const { show } = useContextMenu({ id: MENU_ID });
 
   const { mutate: deleteMessageFunc } = useMutation({
     mutationKey: ["delete-message", message.id],
-    mutationFn: () => deleteMessage(message.id, token || ""),
+    mutationFn: () => deleteMessage(message.id),
     onSuccess: (data) => {
       console.log(data);
       queryClient.invalidateQueries({ queryKey: ["messages", roomName] });
@@ -45,7 +44,7 @@ export const ChatMessageItem = ({
       className={`flex mt-2 ${isOwnMessage ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={cn("max-w-[75%] w-fit flex flex-col gap-1", {
+        className={cn("max-w-[85%] sm:max-w-[75%] w-fit flex flex-col gap-1", {
           "items-end": isOwnMessage,
         })}
       >

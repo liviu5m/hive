@@ -16,18 +16,13 @@ const ChatComponents = ({
   currentUser: User;
   recipientUser: User;
 }) => {
-  const { token } = useAppContext();
   const roomName = [currentUser.id, recipientUser.id].sort().join("-");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const { data: messagesData } = useQuery({
     queryKey: ["messages", roomName],
     queryFn: () =>
-      getMessagesBySenderIdAndReceiverId(
-        currentUser.id,
-        recipientUser.id,
-        token || ""
-      ),
+      getMessagesBySenderIdAndReceiverId(currentUser.id, recipientUser.id),
   });
 
   useEffect(() => {
@@ -36,14 +31,14 @@ const ChatComponents = ({
         messagesData.map((msg: Message) => ({
           ...msg,
           user: { ...msg.sender, name: msg.sender.username },
-        }))
+        })),
       );
   }, [messagesData]);
 
   const { mutate: addMessage } = useMutation({
     mutationKey: ["create-message"],
     mutationFn: (msg: ChatMessage) =>
-      createMessage(msg, currentUser.id, recipientUser.id, token || ""),
+      createMessage(msg, currentUser.id, recipientUser.id),
     onSuccess: (data) => {
       console.log(data);
     },
